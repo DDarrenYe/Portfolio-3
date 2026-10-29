@@ -72,6 +72,16 @@ export function outlineGeometry(src: THREE.BufferGeometry): THREE.BufferGeometry
   return merged;
 }
 
+function toFloat(attr: THREE.BufferAttribute | THREE.InterleavedBufferAttribute): THREE.BufferAttribute {
+  const out = new Float32Array(attr.count * attr.itemSize);
+  for (let i = 0; i < attr.count; i++) {
+    out[i * attr.itemSize] = attr.getX(i);
+    out[i * attr.itemSize + 1] = attr.getY(i);
+    if (attr.itemSize > 2) out[i * attr.itemSize + 2] = attr.getZ(i);
+  }
+  return new THREE.BufferAttribute(out, attr.itemSize);
+}
+
 /** Meshes too small to carry a line (eyes, blush, brows) stay unoutlined. */
 function wantsOutline(mesh: THREE.Mesh, minRadius: number) {
   mesh.geometry.computeBoundingSphere();
@@ -85,6 +95,8 @@ function wantsOutline(mesh: THREE.Mesh, minRadius: number) {
  * Used for animated models, where meshes must keep their own transforms.
  */
 export function toonify(root: THREE.Object3D, minRadius = 0.05) {
+  if (root.userData.toonified) return; // cached glTF scenes come back on remount
+  root.userData.toonified = true;
   const meshes: THREE.Mesh[] = [];
   root.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh);
@@ -114,8 +126,12 @@ export function bakeStatic(root: THREE.Object3D, minRadius = 0.05): THREE.Group 
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;
     const mat = toonFor(mesh.material as THREE.Material);
-    const g = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld);
-    for (const name of Object.keys(g.attributes)) if (name !== "position" && name !== "normal") g.deleteAttribute(name);
+    const g = new THREE.BufferGeometry();
+    // models arrive quantized (int16 positions, int8 normals); expand to floats before baking
+    // in world transforms, or values outside [-1, 1] would be clamped
+    for (const name of ["position", "normal"] as const) g.setAttribute(name, toFloat(mesh.geometry.getAttribute(name)));
+    if (mesh.geometry.index) g.setIndex(mesh.geometry.index.clone());
+    g.applyMatrix4(mesh.matrixWorld);
     const entry = byMat.get(mat.name) ?? { mat, geos: [] };
     entry.geos.push(g);
     byMat.set(mat.name, entry);

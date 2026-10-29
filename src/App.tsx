@@ -10,7 +10,10 @@ const TARGET: [number, number, number] = [0, 1.2, 0];
 const ELEVATION = (37 * Math.PI) / 180;
 
 // ?look=house_showcase or ?look=spot_shopkeeper frames a single asset for review
-const LOOK = new URLSearchParams(window.location.search).get("look");
+const params = new URLSearchParams(window.location.search);
+const LOOK = params.get("look");
+// ?turn=90 starts the town turned by that many degrees, for checking the other sides
+const TURN = Number(params.get("turn") ?? 0);
 
 /** Fixed isometric-style camera; zoom keeps the whole disc in frame at any window size. */
 function CameraRig({ focus }: { focus: THREE.Vector3 | null }) {
@@ -76,14 +79,14 @@ export default function App() {
           <OutlineResolution />
           <Lights />
           <Suspense fallback={null}>
-            <Town focus={LOOK} onFocus={setFocus} />
+            <Town focus={LOOK} onFocus={setFocus} turn={TURN} />
           </Suspense>
         </Canvas>
         <LoadingNote />
       </ErrorBoundary>
       <header className="overlay">
         <h1>Castle Hill</h1>
-        <p>Blockout preview · move the mouse toward either edge to turn the town</p>
+        <p>Move the mouse toward either edge to turn the town</p>
       </header>
     </main>
   );

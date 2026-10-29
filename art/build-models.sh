@@ -3,8 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BLENDER="${BLENDER:-blender}"
-for script in art/scripts/town.py art/scripts/npc_*.py; do
+for script in art/scripts/town.py art/scripts/npcs.py; do
   echo "→ $script"
   "$BLENDER" -b --factory-startup -P "$script" >/dev/null
 done
+node art/optimize.mjs art/build/town.raw.glb public/models/town.glb
 ls -lh public/models

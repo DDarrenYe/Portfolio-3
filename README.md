@@ -5,8 +5,9 @@ on a turntable, with a castle on a hill in the middle and chibi NPCs around it. 
 will open a section of the portfolio. Move the mouse toward either edge of the screen and
 the town turns that way.
 
-**Status:** blockout. The castle, landmarks and filler houses are grey placeholders at their
-final sizes. One finished house and the shopkeeper show the target style.
+**Status:** the town is modelled. The castle, market stall, smithy, wizard tower, guild hall,
+houses and all five NPCs (King, shopkeeper, blacksmith, wizard, adventurer) are finished, each
+NPC with an idle animation. Next up: clicking an NPC to open its dialogue and portfolio section.
 
 ## Run it
 
@@ -15,7 +16,8 @@ npm install
 npm run dev
 ```
 
-Review a single asset up close with `?look=house_showcase` or `?look=spot_shopkeeper`.
+Review an NPC up close with `?look=spot_king` (or `spot_shopkeeper`, `spot_blacksmith`,
+`spot_wizard`, `spot_adventurer`), or start the town turned with `?turn=90`.
 
 ## How it's built
 
@@ -25,8 +27,11 @@ Review a single asset up close with `?look=house_showcase` or `?look=spot_shopke
   (`src/scene/toon.ts`). Lighting and outlines live in code, not in Blender.
 - **Rotation:** `src/hooks/useEdgeRotation.ts`. The mouse sets the turning speed: still in the
   middle 30% of the screen, up to 0.6 rad/s at the edges. Touch drag and arrow keys work too.
-- **Models:** built by Python scripts in `art/scripts/` and exported to `public/models/`.
-  The `.blend` files in `art/` are saved alongside, so you can open and tweak them in Blender.
+- **Models:** built by Python scripts in `art/scripts/` (`town.py` lays out the town,
+  `buildings.py` holds the house and landmark builders, `npcs.py` and `chibi.py` the NPCs) and
+  exported to `public/models/`. The `.blend` files in `art/` are saved alongside, so you can open
+  and tweak them in Blender. `art/optimize.mjs` joins and quantizes the town for the web
+  (about 70k triangles, 2.3 MB).
 
 ## Rebuild the models
 
@@ -35,8 +40,8 @@ BLENDER=/path/to/blender npm run models
 ```
 
 Model conventions (see `art/scripts/lib.py`): 1 Blender unit = 1 town unit, the front of the
-town faces −Y, origins sit at each object's base, and empties named `spot_<npc>` mark where
-each NPC stands.
+town faces −Y, origins sit at each object's base, empties named `spot_<npc>` mark where
+each NPC stands, and `smoke_<name>` marks chimneys.
 
 ## Deploy
 

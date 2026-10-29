@@ -44,6 +44,24 @@ PALETTE = {
     "trousers": "#4d4a63",
     "hair": "#6b4630",
     "scarf": "#d0624b",
+    "gold": "#e8b84a",
+    "royal": "#6f5fae",
+    "cape": "#c4483f",
+    "fur": "#f7f3ea",
+    "leather": "#8f5f3a",
+    "steel": "#b9c2d0",
+    "crystal": "#8fd8ec",
+    "robe": "#4f63b0",
+    "robe2": "#3c4d92",
+    "tunic": "#4f8a3a",
+    "beard": "#eef0f2",
+    "hairdark": "#3b2a22",
+    "hairred": "#b6542f",
+    "ember": "#f29a4a",
+    "awning": "#8ec5e6",
+    "awning2": "#f4ecda",
+    "bread": "#e0a868",
+    "banner": "#3f6fa8",
     # blockout greys
     "block": "#c9ced8",
     "blockroof": "#a9afbd",
@@ -114,12 +132,25 @@ def _finish(name, bm, m, loc, rot, parent, smooth=False, bevel=0.0, bevel_segmen
 def box(name, size, loc=(0, 0, 0), rot=(0, 0, 0), m="block", parent=None, base=True, bevel=0.0):
     """Box of size (x, y, z). With base=True the origin is at the bottom centre."""
     sx, sy, sz = size
+    if min(size) < 0.2:
+        bevel = 0.0  # too thin to show a bevel once outlined; it would only add triangles
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1.0)
     off = 0.5 if base else 0.0
     for v in bm.verts:
         v.co = Vector((v.co.x * sx, v.co.y * sy, (v.co.z + off) * sz))
     return _finish(name, bm, m, loc, rot, parent, bevel=bevel)
+
+
+def beam(name, p0, p1, thick, m="timber", parent=None):
+    """A square beam from p0 to p1 (local coordinates of parent)."""
+    a, b = Vector(p0), Vector(p1)
+    d = b - a
+    o = box(name, (thick, thick, d.length), (0, 0, 0), m=m, parent=parent)
+    o.location = a
+    o.rotation_mode = "QUATERNION"
+    o.rotation_quaternion = d.to_track_quat("Z", "Y")
+    return o
 
 
 def cyl(name, r, h, loc=(0, 0, 0), rot=(0, 0, 0), m="block", parent=None, seg=12, r2=None, smooth=False, bevel=0.0):
@@ -132,7 +163,10 @@ def cyl(name, r, h, loc=(0, 0, 0), rot=(0, 0, 0), m="block", parent=None, seg=12
 
 
 def sphere(name, r, loc=(0, 0, 0), rot=(0, 0, 0), m="block", parent=None, scale=(1, 1, 1), seg=16, rings=10, smooth=True, cut_below=None):
-    """UV sphere centred on loc. cut_below (local z) deletes the lower part, for caps and hair."""
+    """UV sphere centred on loc. cut_below (local z) deletes the lower part, for caps and hair.
+    Small town props (r < 0.09) drop to a low-poly sphere; NPCs pass seg/rings explicitly."""
+    if r < 0.09 and seg <= 8:
+        seg, rings = 6, 4
     bm = bmesh.new()
     bmesh.ops.create_uvsphere(bm, u_segments=seg, v_segments=rings, radius=r)
     if cut_below is not None:

@@ -2,23 +2,29 @@ import { useEffect, useMemo, useRef } from "react";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useEdgeRotation } from "../hooks/useEdgeRotation";
-import { bakeStatic, toonFor, toonify } from "./toon";
+import { Smoke } from "./Smoke";
+import { bakeStatic, toonify } from "./toon";
 
 const base = import.meta.env.BASE_URL;
 const TOWN_URL = `${base}models/town.glb`;
-const SHOPKEEPER_URL = `${base}models/npc_shopkeeper.glb`;
+const NPCS = ["shopkeeper", "king", "blacksmith", "wizard", "adventurer"] as const;
+const npcUrl = (name: string) => `${base}models/npc_${name}.glb`;
 
-// NPCs that don't have finished models yet stand in as grey pegs at their spots.
-const PLACEHOLDER_NPCS = ["king", "blacksmith", "wizard", "adventurer"];
-
-function useSpots(scene: THREE.Object3D) {
+/** Marker empties from Blender: spot_<npc> for where each NPC stands, smoke_<name> for chimneys. */
+function useMarkers(scene: THREE.Object3D) {
   return useMemo(() => {
     scene.updateMatrixWorld(true);
     const spots: Record<string, THREE.Matrix4> = {};
+    const smoke: THREE.Vector3[] = [];
+    let houses = 0;
     scene.traverse((o) => {
       if (o.name.startsWith("spot_")) spots[o.name.slice(5)] = o.matrixWorld.clone();
+      if (!o.name.startsWith("smoke_")) return;
+      // every landmark smokes, but only one house chimney in three, so the sky stays readable
+      const isHouse = /^smoke_(inner|outer)_/.test(o.name);
+      if (!isHouse || houses++ % 3 === 0) smoke.push(o.getWorldPosition(new THREE.Vector3()));
     });
-    return spots;
+    return { spots, smoke };
   }, [scene]);
 }
 
@@ -31,8 +37,8 @@ function Placed({ matrix, children }: { matrix?: THREE.Matrix4; children: React.
   return <group ref={ref}>{children}</group>;
 }
 
-function Shopkeeper() {
-  const { scene, animations } = useGLTF(SHOPKEEPER_URL, false, false);
+function Npc({ name }: { name: string }) {
+  const { scene, animations } = useGLTF(npcUrl(name), false, false);
   const ref = useRef<THREE.Group>(null);
   const model = useMemo(() => {
     toonify(scene, 0.045);
@@ -45,32 +51,24 @@ function Shopkeeper() {
   return <primitive ref={ref} object={model} />;
 }
 
-function PlaceholderNpc() {
-  const mat = useMemo(() => toonFor(new THREE.MeshStandardMaterial({ color: "#c9ced8", name: "pal_block" })), []);
-  return (
-    <group>
-      <mesh material={mat} position={[0, 0.35, 0]} castShadow>
-        <cylinderGeometry args={[0.18, 0.24, 0.6, 12]} />
-      </mesh>
-      <mesh material={mat} position={[0, 0.92, 0]} castShadow>
-        <sphereGeometry args={[0.3, 16, 12]} />
-      </mesh>
-    </group>
-  );
-}
-
 type TownProps = {
   /** Name of an object in town.glb to turn to the front and frame, for reviewing one asset. */
   focus?: string | null;
   onFocus?: (point: THREE.Vector3) => void;
+  /** Starting rotation in degrees. */
+  turn?: number;
 };
 
-export function Town({ focus, onFocus }: TownProps) {
+export function Town({ focus, onFocus, turn = 0 }: TownProps) {
   const { scene } = useGLTF(TOWN_URL, false, false);
-  const spots = useSpots(scene);
+  const { spots, smoke } = useMarkers(scene);
   const baked = useMemo(() => bakeStatic(scene), [scene]);
   const turntable = useRef<THREE.Group>(null);
   useEdgeRotation(turntable, !focus);
+
+  useEffect(() => {
+    if (turntable.current) turntable.current.rotation.y = THREE.MathUtils.degToRad(turn);
+  }, [turn]);
 
   useEffect(() => {
     const target = focus ? scene.getObjectByName(focus) : undefined;
@@ -85,12 +83,10 @@ export function Town({ focus, onFocus }: TownProps) {
   return (
     <group ref={turntable}>
       <primitive object={baked} />
-      <Placed matrix={spots.shopkeeper}>
-        <Shopkeeper />
-      </Placed>
-      {PLACEHOLDER_NPCS.map((n) => (
+      <Smoke points={smoke} />
+      {NPCS.map((n) => (
         <Placed key={n} matrix={spots[n]}>
-          <PlaceholderNpc />
+          <Npc name={n} />
         </Placed>
       ))}
     </group>
@@ -99,4 +95,4 @@ export function Town({ focus, onFocus }: TownProps) {
 
 // Models are uncompressed for now, so skip the Draco and meshopt decoders (and their downloads).
 useGLTF.preload(TOWN_URL, false, false);
-useGLTF.preload(SHOPKEEPER_URL, false, false);
+for (const n of NPCS) useGLTF.preload(npcUrl(n), false, false);
