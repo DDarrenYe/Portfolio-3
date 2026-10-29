@@ -228,6 +228,15 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
 .ware-highlights { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; }
 .ware-highlights li::marker { color: var(--accent); }
 
+.trip { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 2px dashed var(--parchment-deep); }
+.trip-head { display: flex; flex-direction: column; gap: 4px; }
+.trip-when { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
+.photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.photo { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.photo:first-child:nth-last-child(odd) { grid-column: 1 / -1; }
+.photo img { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; border: var(--line); border-radius: 8px; box-shadow: 3px 3px 0 var(--shadow); background: var(--parchment-deep); }
+.photo:first-child:nth-last-child(odd) img { aspect-ratio: 4 / 3; object-position: 50% 30%; }
+.photo figcaption { font-size: 0.82rem; color: var(--ink-soft); }
 .skill-group { display: flex; flex-direction: column; gap: 8px; }
 .scroll-card { padding: 14px 16px; background: #fff; border: var(--line); border-radius: 10px; box-shadow: 4px 4px 0 var(--shadow); }
 .scroll-card p { color: var(--ink-soft); }

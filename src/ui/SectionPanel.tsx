@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { PROFILE, PROJECTS, SKILLS, type Link, type Section } from "../content/portfolio";
+import { PROFILE, PROJECTS, SKILLS, TRIPS, type Link, type Section } from "../content/portfolio";
 import { NpcIcon } from "./NpcIcon";
 
 function Links({ links }: { links: Link[] }) {
@@ -103,12 +103,37 @@ function Education() {
   );
 }
 
+const photoUrl = (src: string) => `${import.meta.env.BASE_URL}adventures/${src}`;
+
 function Adventures() {
   return (
     <>
-      <p className="panel-lede">I love travelling.</p>
-      <p>New places, new people and new ideas to bring home and build.</p>
-      <p>Every finished project is a quest completed. The full quest log lives on GitHub.</p>
+      <p className="panel-lede">I love travelling: new places, new people and new ideas to bring home and build.</p>
+      {TRIPS.map((t) => (
+        <section key={t.when} className="trip">
+          <header className="trip-head">
+            <span className="trip-when">{t.when}</span>
+            <h3>{t.country}</h3>
+            <p className="chips">
+              {t.cities.map((c) => (
+                <span key={c} className="chip">
+                  {c}
+                </span>
+              ))}
+            </p>
+          </header>
+          <p>{t.story}</p>
+          <div className="photos">
+            {t.photos.map((ph) => (
+              <figure key={ph.src} className="photo">
+                <img src={photoUrl(ph.src)} alt={ph.alt} loading="lazy" decoding="async" width="900" height="1200" />
+                <figcaption>{ph.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      ))}
+      <p>Every finished project is a quest completed too. The full quest log lives on GitHub.</p>
       <Links links={[{ label: "Quest log on GitHub", href: PROFILE.github }]} />
     </>
   );

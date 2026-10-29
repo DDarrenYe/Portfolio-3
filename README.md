@@ -1,4 +1,4 @@
-# Castle Hill
+# Darren Ye Portfolio
 
 Darren Ye's portfolio, as a fantasy-RPG town. The page is a round, tightly packed toon-shaded
 town on a turntable, with a castle on a hill in the middle and chibi NPCs around it. Move the
@@ -10,7 +10,7 @@ mouse toward either edge of the screen and the town turns that way. Click a town
 | Shopkeeper | Market stall | Projects (INBTWN, Pacer, Pentimento) |
 | Blacksmith | Smithy | Skills |
 | Wizard | Wizard tower | Education |
-| Adventurer | Guild hall | Adventures |
+| Adventurer | Guild hall | Adventures (South Korea and China trips, with photos) |
 
 The nav buttons under the name open the same conversations, for keyboard and touch users.
 

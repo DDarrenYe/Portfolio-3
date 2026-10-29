@@ -33,7 +33,7 @@ export const SECTIONS: Section[] = [
     label: "About",
     title: "About Darren",
     lines: [
-      "Welcome, traveller, to Castle Hill!",
+      "Welcome, traveller, to my realm!",
       "This realm belongs to Darren Ye, an IT Management student at the University of Auckland.",
       "He builds programs that bridge people with their goals. Shall I tell you more of him?",
     ],
@@ -79,9 +79,10 @@ export const SECTIONS: Section[] = [
     title: "Adventures",
     lines: [
       "Hey there, fellow traveller!",
-      "Darren loves to travel. New places, new people, and new ideas to bring home and build.",
+      "Darren loves to travel. In July 2025 his crew explored Seoul and Busan in South Korea.",
+      "Then in November it was Guangzhou and Beijing in China. Want to see the photos?",
     ],
-    cta: "Hear about the adventures",
+    cta: "See the adventures",
   },
 ];
 
@@ -152,4 +153,55 @@ export const SKILLS: { group: string; items: string[] }[] = [
   { group: "Frameworks", items: ["React", "Next.js", "SwiftUI", "FastAPI", "Tailwind CSS", "Three.js"] },
   { group: "Data", items: ["PostgreSQL", "Supabase", "pandas", "NumPy", "statsmodels", "RStudio"] },
   { group: "Tools", items: ["Git", "GitHub Actions", "Vercel", "Render", "pytest", "Playwright", "Blender (Python)"] },
+];
+
+export type Photo = { src: string; alt: string; caption: string };
+
+export type Trip = { when: string; country: string; cities: string[]; story: string; photos: Photo[] };
+
+// Photos live in public/adventures/.
+export const TRIPS: Trip[] = [
+  {
+    when: "July 2025",
+    country: "South Korea",
+    cities: ["Seoul", "Busan"],
+    story:
+      "We spent July in South Korea, starting in Seoul and heading south to Busan. Highlights were dressing up in hanbok for Gyeongbokgung Palace, wandering Seoul's side streets, and looking out over the city lights at night.",
+    photos: [
+      {
+        src: "seoul-hanbok.webp",
+        alt: "Darren and two friends in dark hanbok robes with prop swords, arms crossed, by the pond at Gyeongbokgung Palace with a mountain behind",
+        caption: "Hanbok at Gyeongbokgung Palace, Seoul",
+      },
+      {
+        src: "seoul-street.webp",
+        alt: "Darren smiling in the middle of a narrow Seoul street lined with shops, signs and overhead power lines",
+        caption: "Exploring the streets of Seoul",
+      },
+      {
+        src: "seoul-night.webp",
+        alt: "Darren in a cap in front of Seoul's skyline lit up at night",
+        caption: "Seoul by night",
+      },
+    ],
+  },
+  {
+    when: "November 2025",
+    country: "China",
+    cities: ["Guangzhou", "Beijing"],
+    story:
+      "In November we went to China, from Guangzhou in the south up to Beijing. Cold, clear skies made for great days at the Great Wall and the Summer Palace.",
+    photos: [
+      {
+        src: "great-wall.webp",
+        alt: "Darren in a beanie and scarf giving two thumbs up, sitting on steep stone steps of the Great Wall below a watchtower",
+        caption: "The Great Wall",
+      },
+      {
+        src: "beijing-summer-palace.webp",
+        alt: "The red and green Tower of Buddhist Incense rising above a stone terrace against a deep blue sky, framed by pine branches",
+        caption: "Summer Palace, Beijing",
+      },
+    ],
+  },
 ];
