@@ -24,7 +24,7 @@ export function nightAt(phase: number) {
 type Key = { sun: string; sunI: number; sky: string; ground: string; hemiI: number; top: string; bottom: string };
 
 // three looks the cycle blends between: day, the golden middle of dusk/dawn, and night
-const DAY: Key = { sun: "#fff3dc", sunI: 2.4, sky: "#e4ecf8", ground: "#6f93c8", hemiI: 1.9, top: "#cfe0f2", bottom: "#f1ece0" };
+const DAY: Key = { sun: "#fff3dc", sunI: 2.4, sky: "#e4ecf8", ground: "#6f93c8", hemiI: 1.9, top: "#5fb0ec", bottom: "#c4e6fb" };
 const DUSK: Key = { sun: "#ffb27a", sunI: 1.6, sky: "#f0c9b0", ground: "#6a6aa8", hemiI: 1.5, top: "#7f74b0", bottom: "#f4ac7c" };
 const NIGHT: Key = { sun: "#9fb6ff", sunI: 0.75, sky: "#5d6fa6", ground: "#28325e", hemiI: 1.1, top: "#121a36", bottom: "#2f3a68" };
 
@@ -42,7 +42,7 @@ const tmp = { sun: new THREE.Color(), sky: new THREE.Color(), ground: new THREE.
 
 /**
  * Sun, fill light and sky for the day and night cycle. The sky is a DOM element behind the
- * canvas; its colours and star opacity are set here as CSS variables.
+ * canvas; its colours, star opacity and cloud fade are set here as CSS variables.
  */
 export function DayNight({ sky }: { sky: React.RefObject<HTMLDivElement> }) {
   const sun = useRef<THREE.DirectionalLight>(null);
@@ -80,8 +80,7 @@ export function DayNight({ sky }: { sky: React.RefObject<HTMLDivElement> }) {
       el.style.setProperty("--sky-top", `#${tmp.top.copy(a.topC).lerp(b.topC, t).getHexString()}`);
       el.style.setProperty("--sky-bottom", `#${tmp.bottom.copy(a.bottomC).lerp(b.bottomC, t).getHexString()}`);
       el.style.setProperty("--stars", smooth(0.55, 1, n).toFixed(3));
-      // the header reads this to switch to light text on the night sky
-      el.parentElement?.style.setProperty("--night", smooth(0.22, 0.36, n).toFixed(3));
+      el.style.setProperty("--day", (1 - n).toFixed(3)); // clouds fade and darken with this
     }
   });
 

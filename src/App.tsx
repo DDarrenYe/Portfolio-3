@@ -7,8 +7,11 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { DayNight } from "./scene/DayNight";
 import { Town } from "./scene/Town";
 import { outlineUniforms } from "./scene/toon";
+import { Clouds } from "./ui/Clouds";
 import { DialogueBox } from "./ui/DialogueBox";
+import { Scroll } from "./ui/Scroll";
 import { SectionPanel } from "./ui/SectionPanel";
+import { Signpost } from "./ui/Signpost";
 
 const TARGET: [number, number, number] = [0, 1.2, 0];
 const ELEVATION = (37 * Math.PI) / 180;
@@ -100,6 +103,7 @@ export default function App() {
     <main className="stage">
       <div ref={sky} className="sky" aria-hidden="true">
         <div className="stars" />
+        <Clouds />
       </div>
       <ErrorBoundary>
         <Canvas
@@ -120,17 +124,17 @@ export default function App() {
         <LoadingNote />
       </ErrorBoundary>
 
-      <header className="overlay">
-        <h1>{PROFILE.name}</h1>
-        <p className="overlay-role">
+      <Signpost>
+        <h1 className="sign-name">{PROFILE.name}</h1>
+        <p className="sign-role">
           {PROFILE.role} · {PROFILE.school}
         </p>
-        <nav aria-label="Portfolio sections">
+        <nav className="sign-nav" aria-label="Portfolio sections">
           {SECTIONS.map((s) => (
             <button
               key={s.npc}
               type="button"
-              className={`nav-btn${active === s.npc ? " is-active" : ""}`}
+              className={`sign-btn${active === s.npc ? " is-active" : ""}`}
               aria-pressed={active === s.npc}
               onClick={() => talkTo(s.npc)}
             >
@@ -138,13 +142,13 @@ export default function App() {
             </button>
           ))}
         </nav>
-      </header>
+      </Signpost>
 
       {!active && (
-        <p className="hint">
+        <Scroll className="hint">
           <span className="hint-wide">Move toward either edge to turn the town · Click a townsperson to talk</span>
           <span className="hint-touch">Drag to turn the town · Tap a townsperson to talk</span>
-        </p>
+        </Scroll>
       )}
 
       {section && !panelOpen && <DialogueBox section={section} onOpen={() => setPanelOpen(true)} onClose={leave} />}
