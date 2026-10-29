@@ -32,7 +32,7 @@ function Placed({ matrix, children }: { matrix?: THREE.Matrix4; children: React.
 }
 
 function Shopkeeper() {
-  const { scene, animations } = useGLTF(SHOPKEEPER_URL);
+  const { scene, animations } = useGLTF(SHOPKEEPER_URL, false, false);
   const ref = useRef<THREE.Group>(null);
   const model = useMemo(() => {
     toonify(scene, 0.045);
@@ -66,7 +66,7 @@ type TownProps = {
 };
 
 export function Town({ focus, onFocus }: TownProps) {
-  const { scene } = useGLTF(TOWN_URL);
+  const { scene } = useGLTF(TOWN_URL, false, false);
   const spots = useSpots(scene);
   const baked = useMemo(() => bakeStatic(scene), [scene]);
   const turntable = useRef<THREE.Group>(null);
@@ -97,5 +97,6 @@ export function Town({ focus, onFocus }: TownProps) {
   );
 }
 
-useGLTF.preload(TOWN_URL);
-useGLTF.preload(SHOPKEEPER_URL);
+// Models are uncompressed for now, so skip the Draco and meshopt decoders (and their downloads).
+useGLTF.preload(TOWN_URL, false, false);
+useGLTF.preload(SHOPKEEPER_URL, false, false);

@@ -1,6 +1,8 @@
 import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
+import { useProgress } from "@react-three/drei";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { Town } from "./scene/Town";
 import { outlineUniforms } from "./scene/toon";
 
@@ -34,6 +36,12 @@ function OutlineResolution() {
   return null;
 }
 
+function LoadingNote() {
+  const { active, progress } = useProgress();
+  if (!active) return null;
+  return <p className="loading">Building the town… {Math.round(progress)}%</p>;
+}
+
 function Lights() {
   return (
     <>
@@ -62,14 +70,17 @@ export default function App() {
   const [focus, setFocus] = useState<THREE.Vector3 | null>(null);
   return (
     <main className="stage">
-      <Canvas orthographic shadows="percentage" dpr={[1, 2]} camera={{ near: 1, far: 200 }} gl={{ antialias: true }}>
-        <CameraRig focus={focus} />
-        <OutlineResolution />
-        <Lights />
-        <Suspense fallback={null}>
-          <Town focus={LOOK} onFocus={setFocus} />
-        </Suspense>
-      </Canvas>
+      <ErrorBoundary>
+        <Canvas orthographic shadows="percentage" dpr={[1, 2]} camera={{ near: 1, far: 200 }} gl={{ antialias: true }}>
+          <CameraRig focus={focus} />
+          <OutlineResolution />
+          <Lights />
+          <Suspense fallback={null}>
+            <Town focus={LOOK} onFocus={setFocus} />
+          </Suspense>
+        </Canvas>
+        <LoadingNote />
+      </ErrorBoundary>
       <header className="overlay">
         <h1>Castle Hill</h1>
         <p>Blockout preview · move the mouse toward either edge to turn the town</p>
