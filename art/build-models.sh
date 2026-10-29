@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BLENDER="${BLENDER:-blender}"
-for script in art/scripts/town.py art/scripts/npcs.py; do
+for script in art/scripts/town.py art/scripts/npcs.py art/scripts/sign.py; do
   echo "→ $script"
   "$BLENDER" -b --factory-startup -P "$script" >/dev/null
 done

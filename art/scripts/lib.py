@@ -62,6 +62,13 @@ PALETTE = {
     "awning2": "#f4ecda",
     "bread": "#e0a868",
     "banner": "#3f6fa8",
+    "weathered": "#8d929b",
+    "weathered2": "#a3a8b0",
+    "weatheredgrain": "#6d727c",
+    "signwood": "#cf8a52",
+    "signwood2": "#c07a45",
+    "signgrain": "#9a5a30",
+    "signframe": "#8e3a26",
     # blockout greys
     "block": "#c9ced8",
     "blockroof": "#a9afbd",

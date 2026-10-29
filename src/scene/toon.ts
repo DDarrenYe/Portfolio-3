@@ -41,9 +41,10 @@ export const outlineUniforms = {
  * faces are drawn, so the hull shows just beyond the silhouette. Each material has
  * its own colour so an NPC's outline can light up on hover.
  */
-export function makeOutlineMaterial(color: THREE.ColorRepresentation = INK) {
+export function makeOutlineMaterial(color: THREE.ColorRepresentation = INK, resolution = outlineUniforms.uResolution) {
   return new THREE.ShaderMaterial({
-    uniforms: { ...outlineUniforms, uColor: { value: new THREE.Color(color) } },
+    // pass a resolution of its own when drawing into a different canvas from the town's
+    uniforms: { ...outlineUniforms, uResolution: resolution, uColor: { value: new THREE.Color(color) } },
     side: THREE.BackSide,
     vertexShader: /* glsl */ `
       uniform float uWidth;
@@ -114,7 +115,7 @@ export function toonify(root: THREE.Object3D, minRadius = 0.05, outline: THREE.M
     mesh.material = toonFor(mesh.material as THREE.Material);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-    if (wantsOutline(mesh, minRadius)) {
+    if (wantsOutline(mesh, minRadius) && !mesh.name.startsWith("nolines_")) {
       const hull = new THREE.Mesh(outlineGeometry(mesh.geometry), outline);
       hull.raycast = () => {};
       mesh.add(hull);

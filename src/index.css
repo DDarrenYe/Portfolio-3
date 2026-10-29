@@ -52,13 +52,8 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   background-size: 420px 300px;
 }
 
-/* ---- hanging wooden sign (top left): weathered grey beam and post, warm wood board on chains */
+/* ---- hanging wooden sign (top left) */
 :root {
-  --weathered: #8d929b;
-  --weathered-dark: #6d727c;
-  --wood: #c98450;
-  --wood-dark: #a9663a;
-  --frame: #8e3a26;
   --carve: #5b2316;
 }
 .signpost {
@@ -70,87 +65,26 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   padding-left: max(14px, env(safe-area-inset-left, 0px));
   pointer-events: none;
 }
-.signpost-post {
+/* the sign itself is a Blender model drawn in this canvas (Signpost.tsx); the DOM below only
+   holds the text and sets the spacing the model is fitted to */
+.signpost-canvas {
   position: absolute;
-  left: max(14px, env(safe-area-inset-left, 0px));
   top: 0;
-  width: 24px;
-  height: calc(max(14px, env(safe-area-inset-top, 0px)) + 120px);
-  background:
-    repeating-linear-gradient(90deg, transparent 0 7px, rgb(42 45 58 / 0.18) 7px 8px, transparent 8px 15px),
-    linear-gradient(90deg, var(--weathered), var(--weathered-dark));
-  border: var(--line);
-  border-top: 0;
-  border-radius: 0 0 4px 4px;
+  left: 0;
+  pointer-events: none;
+  filter: drop-shadow(5px 6px 0 rgb(143 179 218 / 0.9));
 }
-.signpost-brace {
-  position: absolute;
-  left: calc(max(14px, env(safe-area-inset-left, 0px)) + 10px);
-  top: calc(max(14px, env(safe-area-inset-top, 0px)) + 70px);
-  width: 92px;
-  height: 14px;
-  transform-origin: 0 50%;
-  transform: rotate(-38deg);
-  background: linear-gradient(180deg, var(--weathered), var(--weathered-dark));
-  border: var(--line);
-  border-radius: 3px;
-}
-.signpost-arm { position: relative; display: inline-flex; flex-direction: column; margin-left: 12px; }
-.signpost-beam {
-  position: relative;
-  height: 24px;
-  margin-left: -14px;
-  margin-right: -26px;
-  background:
-    repeating-linear-gradient(180deg, transparent 0 6px, rgb(42 45 58 / 0.2) 6px 7px, transparent 7px 12px),
-    linear-gradient(180deg, #a1a6ae, var(--weathered-dark));
-  border: var(--line);
-  border-radius: 3px 5px 5px 3px;
-  box-shadow: 3px 4px 0 rgb(42 45 58 / 0.18);
-}
-/* iron clamps where the chains hang */
-.signpost-clamp {
-  position: absolute;
-  top: -5px;
-  width: 22px;
-  height: 30px;
-  background: #5c6270;
-  border: var(--line);
-  border-radius: 4px;
-}
-.signpost-clamp:nth-child(1) { left: calc(14px + 18%); }
-.signpost-clamp:nth-child(2) { left: calc(14px + 72%); }
-.signpost-clamp::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #c3c8d2; border: 1.5px solid var(--ink); }
-.signpost-swing { transform-origin: 50% 0; animation: swing 7s ease-in-out infinite; padding: 0 6px; }
-@keyframes swing { 0%, 100% { transform: rotate(-0.9deg); } 50% { transform: rotate(0.9deg); } }
-@media (prefers-reduced-motion: reduce) { .signpost-swing { animation: none; } }
-.signpost-chains { position: relative; height: 40px; margin-top: -4px; }
-.chain { position: absolute; top: 0; width: 17px; height: 48px; }
-.chain:nth-child(1) { left: calc(18% + 4px); }
-.chain:nth-child(2) { left: calc(72% + 4px); }
-
-.sign {
-  /* ink outline round the notched shape, then the blue cel shadow */
-  filter: drop-shadow(2.5px 0 0 var(--ink)) drop-shadow(-2.5px 0 0 var(--ink)) drop-shadow(0 2.5px 0 var(--ink))
-    drop-shadow(0 -2.5px 0 var(--ink)) drop-shadow(5px 6px 0 rgb(143 179 218 / 0.9));
-}
-.sign-frame {
-  padding: 7px;
-  background: linear-gradient(160deg, #b0503a, var(--frame) 55%, #6f2a1b);
-  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px);
-}
+.signpost-arm { position: relative; z-index: 1; display: inline-flex; flex-direction: column; margin-left: 12px; }
+.signpost-beam { height: 24px; }
+.signpost-swing { transform-origin: 50% 0; padding: 0 6px; }
+.signpost-chains { height: 40px; }
+.sign-frame { padding: 7px; }
 .sign-board {
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 12px 18px 14px;
   max-width: min(540px, calc(100vw - 80px));
-  background:
-    repeating-linear-gradient(180deg, transparent 0 26px, rgb(80 34 14 / 0.35) 26px 28px, rgb(255 214 160 / 0.25) 28px 29px),
-    repeating-linear-gradient(176deg, transparent 0 5px, rgb(110 50 20 / 0.12) 5px 6px, transparent 6px 11px),
-    linear-gradient(180deg, #d89a62, var(--wood) 45%, var(--wood-dark));
-  clip-path: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px);
-  box-shadow: inset 0 0 0 2px rgb(60 20 8 / 0.35);
 }
 /* carved lettering: dark grooves with a pale lip underneath */
 .sign-name, .sign-role {

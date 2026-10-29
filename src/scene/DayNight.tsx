@@ -5,6 +5,10 @@ import { getToon } from "./toon";
 
 export const CYCLE_SECONDS = 180;
 
+let night = 0;
+/** How dark it is right now, 0 to 1, for things drawn outside the town's canvas (the sign). */
+export const getNight = () => night;
+
 // ?phase=0.5 freezes the clock at that point of the cycle (0 = noon, 0.5 = midnight), for reviewing
 const PHASE = new URLSearchParams(window.location.search).get("phase");
 
@@ -51,6 +55,7 @@ export function DayNight({ sky }: { sky: React.RefObject<HTMLDivElement> }) {
   useFrame(({ clock }) => {
     const phase = PHASE !== null ? Number(PHASE) : (clock.elapsedTime / CYCLE_SECONDS) % 1;
     const n = nightAt(phase);
+    night = n;
     // day -> dusk over the first half of the transition, dusk -> night over the second
     const [a, b, t] = n < 0.5 ? [KEYS[0], KEYS[1], n * 2] : [KEYS[1], KEYS[2], n * 2 - 1];
     const lerp = (x: number, y: number) => x + (y - x) * t;
