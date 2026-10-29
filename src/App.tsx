@@ -144,12 +144,11 @@ export default function App() {
         </nav>
       </Signpost>
 
-      {!active && (
-        <Scroll className="hint">
-          <span className="hint-wide">Move toward either edge to turn the town · Click a townsperson to talk</span>
-          <span className="hint-touch">Drag to turn the town · Tap a townsperson to talk</span>
-        </Scroll>
-      )}
+      {/* stays mounted and fades out while talking, so its 3D view isn't rebuilt each time */}
+      <Scroll className={`hint${active ? " is-hidden" : ""}`}>
+        <span className="hint-wide">Move toward either edge to turn the town · Click a townsperson to talk</span>
+        <span className="hint-touch">Drag to turn the town · Tap a townsperson to talk</span>
+      </Scroll>
 
       {section && !panelOpen && <DialogueBox section={section} onOpen={() => setPanelOpen(true)} onClose={leave} />}
       {section && panelOpen && <SectionPanel section={section} onClose={leave} />}

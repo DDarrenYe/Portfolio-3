@@ -10,16 +10,21 @@ const PUFFS: [number, number, number][] = [
 ];
 const BASE = { x: 28, y: 52, w: 138, h: 26 };
 
-/** A toon cloud: white puffs with one ink outline round the whole shape and a pale blue underside. */
+/**
+ * A toon cloud in three tones, like the town's cel shading: each puff is mid blue-grey with a
+ * white lit cap toward the sun (top left), and a deeper blue band runs along the underside.
+ * One ink outline goes round the whole shape.
+ */
 function Cloud({ width }: { width: number }) {
-  const clip = useId();
+  const clip = useId().replace(/:/g, ""); // React ids contain colons, which break url(#id)
+  // shapes go straight into the clipPath: SVG ignores a <g> inside one
   const shapes = (grow: number, fill: string) => (
-    <g fill={fill}>
+    <>
       {PUFFS.map(([x, y, r], i) => (
-        <circle key={i} cx={x} cy={y} r={r + grow} />
+        <circle key={i} cx={x} cy={y} r={r + grow} fill={fill} />
       ))}
-      <rect x={BASE.x - grow} y={BASE.y - grow} width={BASE.w + grow * 2} height={BASE.h + grow * 2} rx={13 + grow} />
-    </g>
+      <rect x={BASE.x - grow} y={BASE.y - grow} width={BASE.w + grow * 2} height={BASE.h + grow * 2} rx={13 + grow} fill={fill} />
+    </>
   );
   return (
     <svg viewBox="-4 -4 208 98" width={width} aria-hidden="true">
@@ -27,8 +32,27 @@ function Cloud({ width }: { width: number }) {
         <clipPath id={clip}>{shapes(0, "#fff")}</clipPath>
       </defs>
       {shapes(3, "#2a2d3a")}
-      {shapes(0, "#ffffff")}
-      <ellipse cx="96" cy="84" rx="92" ry="17" fill="#d4e5f6" clipPath={`url(#${clip})`} />
+      <g clipPath={`url(#${clip})`}>
+        {/* shade tone fills the cloud */}
+        <rect x="-4" y="-4" width="208" height="98" fill="#cfdff0" />
+        {/* lit caps: each puff's white highlight, nudged up and left toward the sun */}
+        {PUFFS.map(([x, y, r], i) => (
+          <circle key={i} cx={x - r * 0.18} cy={y - r * 0.24} r={r * 0.86} fill="#ffffff" />
+        ))}
+        {/* deep shade along the base */}
+        <ellipse cx="100" cy="88" rx="96" ry="15" fill="#a9c3e0" />
+        {/* thin crescent lines where puffs overlap, like the reference's hand-drawn folds */}
+        {PUFFS.slice(1, 4).map(([x, y, r], i) => (
+          <path
+            key={i}
+            d={`M ${x - r * 0.75} ${y + r * 0.35} A ${r} ${r} 0 0 0 ${x + r * 0.2} ${y + r * 0.82}`}
+            fill="none"
+            stroke="#9fb8d4"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        ))}
+      </g>
     </svg>
   );
 }

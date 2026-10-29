@@ -69,6 +69,9 @@ PALETTE = {
     "signwood2": "#c07a45",
     "signgrain": "#9a5a30",
     "signframe": "#8e3a26",
+    "parchment": "#f2dca8",
+    "parchment2": "#e2c286",
+    "parchmentdark": "#c9a462",
     # blockout greys
     "block": "#c9ced8",
     "blockroof": "#a9afbd",

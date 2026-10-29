@@ -1,38 +1,116 @@
-import type { ReactNode } from "react";
+import { Suspense, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import * as THREE from "three";
+import { makeOutlineMaterial, toonify } from "../scene/toon";
+import { UiLights } from "./UiLights";
 
-/** One rolled end of the scroll: the curl of paper round a rod with brass knobs. */
-function ScrollEnd({ side }: { side: "left" | "right" }) {
+const SCROLL_URL = `${import.meta.env.BASE_URL}models/scroll.glb`;
+const PX = 40; // pixels per Blender unit
+const SHEET_W = 10; // sheet size as modelled in art/scripts/scroll.py
+const SHEET_H = 1;
+// room around the text for the rolled ends, which stand taller than the sheet
+const PAD_X = 18;
+const PAD_Y = 26;
+
+type Layout = { x: number; y: number; w: number; h: number; canvasW: number; canvasH: number };
+
+const outlineResolution = { value: new THREE.Vector2(1, 1) };
+const scrollOutline = makeOutlineMaterial(undefined, outlineResolution);
+
+/** The Blender scroll, stretched to fit the text and capped with a rolled end on each side. */
+function ScrollScene({ layout }: { layout: Layout }) {
+  const { scene } = useGLTF(SCROLL_URL, false, false);
+  const { camera, size } = useThree();
+
+  const parts = useMemo(() => {
+    toonify(scene, 0.04, scrollOutline);
+    const get = (n: string) => scene.getObjectByName(n)!.clone(true);
+    return { sheet: get("sheet"), left: get("end_l"), right: get("end_r") };
+  }, [scene]);
+
+  useLayoutEffect(() => {
+    outlineResolution.value.set(size.width, size.height);
+    const u = (px: number) => px / PX;
+    const L = layout;
+    const cy = -u(L.y + L.h / 2);
+    parts.sheet.position.set(u(L.x + L.w / 2), cy, 0);
+    parts.sheet.scale.set(u(L.w) / SHEET_W, u(L.h) / SHEET_H, 1);
+    // the ends keep their proportions, sized to the sheet's height
+    const k = u(L.h) / SHEET_H;
+    parts.left.position.set(u(L.x), cy, 0.05);
+    parts.right.position.set(u(L.x + L.w), cy, 0.05);
+    parts.left.scale.setScalar(k);
+    parts.right.scale.setScalar(k);
+
+    const cam = camera as THREE.OrthographicCamera;
+    cam.zoom = PX;
+    cam.position.set(u(L.canvasW) / 2, -u(L.canvasH) / 2, 50);
+    cam.lookAt(u(L.canvasW) / 2, -u(L.canvasH) / 2, 0);
+    cam.updateProjectionMatrix();
+  }, [layout, parts, camera, size]);
+
   return (
-    <svg
-      className={`scroll-end scroll-end-${side}`}
-      viewBox="0 0 30 64"
-      width="30"
-      height="64"
-      aria-hidden="true"
-      style={side === "right" ? { transform: "scaleX(-1)" } : undefined}
-    >
-      {/* rod */}
-      <rect x="10" y="4" width="8" height="56" rx="3" fill="#7d8594" stroke="#2a2d3a" strokeWidth="2.5" />
-      {/* rolled paper */}
-      <rect x="7" y="10" width="17" height="44" rx="7" fill="#d8b46e" stroke="#2a2d3a" strokeWidth="2.5" />
-      <path d="M24 16 C 18 18, 18 46, 24 48" fill="none" stroke="#a9813f" strokeWidth="2" />
-      {/* curl where the paper leaves the roll */}
-      <path d="M24 10 C 30 10, 30 18, 24 18" fill="#eed6a0" stroke="#2a2d3a" strokeWidth="2" />
-      <path d="M24 46 C 30 46, 30 54, 24 54" fill="#eed6a0" stroke="#2a2d3a" strokeWidth="2" />
-      {/* brass knobs */}
-      <rect x="7.5" y="1" width="13" height="7" rx="3" fill="#c9a25a" stroke="#2a2d3a" strokeWidth="2" />
-      <rect x="7.5" y="56" width="13" height="7" rx="3" fill="#c9a25a" stroke="#2a2d3a" strokeWidth="2" />
-    </svg>
+    <>
+      <UiLights />
+      <primitive object={parts.sheet} />
+      <primitive object={parts.left} />
+      <primitive object={parts.right} />
+    </>
   );
 }
 
-/** A parchment scroll that holds a line of text, with a rolled end on each side. */
+/**
+ * A parchment scroll that holds a line of text: a Blender model drawn with the town's toon
+ * shading, fitted around real HTML text.
+ */
 export function Scroll({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const body = useRef<HTMLParagraphElement>(null);
+  const [layout, setLayout] = useState<Layout | null>(null);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!wrap.current || !body.current) return;
+      setLayout({
+        x: body.current.offsetLeft + PAD_X,
+        y: body.current.offsetTop + PAD_Y,
+        w: body.current.offsetWidth,
+        h: body.current.offsetHeight,
+        canvasW: wrap.current.offsetWidth + PAD_X * 2,
+        canvasH: wrap.current.offsetHeight + PAD_Y * 2,
+      });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (body.current) ro.observe(body.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   return (
-    <div className={`scroll ${className}`}>
-      <ScrollEnd side="left" />
-      <p className="scroll-body">{children}</p>
-      <ScrollEnd side="right" />
+    <div ref={wrap} className={`scroll ${className}`}>
+      {layout && (
+        <div
+          className="scroll-canvas"
+          style={{ left: -PAD_X, top: -PAD_Y, width: layout.canvasW, height: layout.canvasH }}
+          aria-hidden="true"
+        >
+          <Canvas orthographic dpr={[1, 2]} gl={{ antialias: true, alpha: true }} camera={{ near: 1, far: 200, zoom: PX }}>
+            <Suspense fallback={null}>
+              <ScrollScene layout={layout} />
+            </Suspense>
+          </Canvas>
+        </div>
+      )}
+      <p ref={body} className="scroll-body">
+        {children}
+      </p>
     </div>
   );
 }
+
+useGLTF.preload(SCROLL_URL, false, false);

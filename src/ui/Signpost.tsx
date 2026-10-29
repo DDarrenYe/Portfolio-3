@@ -2,8 +2,8 @@ import { Suspense, useLayoutEffect, useMemo, useRef, useState, type ReactNode } 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { getNight } from "../scene/DayNight";
 import { makeOutlineMaterial, toonify } from "../scene/toon";
+import { UiLights } from "./UiLights";
 
 const SIGN_URL = `${import.meta.env.BASE_URL}models/sign.glb`;
 const PX = 40; // pixels per Blender unit
@@ -52,8 +52,6 @@ const signOutline = makeOutlineMaterial(undefined, outlineResolution);
 function SignScene({ layout, swing }: { layout: Layout; swing: React.RefObject<HTMLDivElement> }) {
   const { scene } = useGLTF(SIGN_URL, false, false);
   const { camera, size } = useThree();
-  const hemi = useRef<THREE.HemisphereLight>(null);
-  const sun = useRef<THREE.DirectionalLight>(null);
   const swingGroup = useRef<THREE.Group>(null);
   const still = useMemo(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
 
@@ -104,16 +102,11 @@ function SignScene({ layout, swing }: { layout: Layout; swing: React.RefObject<H
     const deg = swingAngle(clock.elapsedTime, still);
     if (swingGroup.current) swingGroup.current.rotation.z = -THREE.MathUtils.degToRad(deg);
     if (swing.current) swing.current.style.transform = `rotate(${deg}deg)`;
-    // dim a little after dark, but stay readable
-    const n = getNight();
-    if (sun.current) sun.current.intensity = 2.3 - n * 0.9;
-    if (hemi.current) hemi.current.intensity = 1.9 - n * 0.5;
   });
 
   return (
     <>
-      <hemisphereLight ref={hemi} args={["#f4f1ea", "#7f9fcc", 1.9]} />
-      <directionalLight ref={sun} color="#fff3dc" intensity={2.3} position={[-4, 8, 10]} />
+      <UiLights />
       <group scale={[1, 1 / Math.cos(PITCH), 1]}>
         <primitive object={parts.post} />
         <primitive object={parts.brace} />
