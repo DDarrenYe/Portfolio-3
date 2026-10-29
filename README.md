@@ -1,13 +1,23 @@
 # Castle Hill
 
-An interactive fantasy-RPG portfolio. The page is a round, tightly packed toon-shaded town
-on a turntable, with a castle on a hill in the middle and chibi NPCs around it. Each NPC
-will open a section of the portfolio. Move the mouse toward either edge of the screen and
-the town turns that way.
+Darren Ye's portfolio, as a fantasy-RPG town. The page is a round, tightly packed toon-shaded
+town on a turntable, with a castle on a hill in the middle and chibi NPCs around it. Move the
+mouse toward either edge of the screen and the town turns that way. Click a townsperson to talk:
 
-**Status:** the town is modelled. The castle, market stall, smithy, wizard tower, guild hall,
-houses and all five NPCs (King, shopkeeper, blacksmith, wizard, adventurer) are finished, each
-NPC with an idle animation. Next up: clicking an NPC to open its dialogue and portfolio section.
+| NPC | Where | Opens |
+|---|---|---|
+| The King | Castle gate | About |
+| Shopkeeper | Market stall | Projects (INBTWN, Pacer, Pentimento) |
+| Blacksmith | Smithy | Skills |
+| Wizard | Wizard tower | Education |
+| Adventurer | Guild hall | Adventures |
+
+The nav buttons under the name open the same conversations, for keyboard and touch users.
+
+## Change the words
+
+Everything the NPCs say and every panel's content lives in `src/content/portfolio.ts`, with
+the panel layouts in `src/ui/SectionPanel.tsx`.
 
 ## Run it
 

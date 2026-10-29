@@ -29,8 +29,8 @@ export function toonFor(src: THREE.Material): THREE.MeshToonMaterial {
   return m;
 }
 
+/** Shared by every outline material, so one update resizes all the lines. */
 export const outlineUniforms = {
-  uColor: { value: INK },
   uWidth: { value: 3 }, // line width in CSS pixels
   uResolution: { value: new THREE.Vector2(1, 1) }, // drawing-buffer size in CSS pixels
 };
@@ -38,26 +38,31 @@ export const outlineUniforms = {
 /**
  * Inverted-hull outline drawn at a constant width on screen, like an ink line.
  * Each vertex is pushed out along its smoothed normal in screen space; only back
- * faces are drawn, so the hull shows just beyond the silhouette.
+ * faces are drawn, so the hull shows just beyond the silhouette. Each material has
+ * its own colour so an NPC's outline can light up on hover.
  */
-export const outlineMaterial = new THREE.ShaderMaterial({
-  uniforms: outlineUniforms,
-  side: THREE.BackSide,
-  vertexShader: /* glsl */ `
-    uniform float uWidth;
-    uniform vec2 uResolution;
-    void main() {
-      vec4 clip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      vec3 n = normalize(normalMatrix * normal);
-      vec2 dir = normalize(n.xy + vec2(1e-6));
-      clip.xy += dir * uWidth * 2.0 / uResolution * clip.w;
-      clip.z += 0.0004 * clip.w;
-      gl_Position = clip;
-    }`,
-  fragmentShader: /* glsl */ `
-    uniform vec3 uColor;
-    void main() { gl_FragColor = vec4(uColor, 1.0); }`,
-});
+export function makeOutlineMaterial(color: THREE.ColorRepresentation = INK) {
+  return new THREE.ShaderMaterial({
+    uniforms: { ...outlineUniforms, uColor: { value: new THREE.Color(color) } },
+    side: THREE.BackSide,
+    vertexShader: /* glsl */ `
+      uniform float uWidth;
+      uniform vec2 uResolution;
+      void main() {
+        vec4 clip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec3 n = normalize(normalMatrix * normal);
+        vec2 dir = normalize(n.xy + vec2(1e-6));
+        clip.xy += dir * uWidth * 2.0 / uResolution * clip.w;
+        clip.z += 0.0004 * clip.w;
+        gl_Position = clip;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      void main() { gl_FragColor = vec4(uColor, 1.0); }`,
+  });
+}
+
+export const outlineMaterial = makeOutlineMaterial();
 
 /**
  * Hull geometry for the outline: same positions, but with normals smoothed across
@@ -94,7 +99,7 @@ function wantsOutline(mesh: THREE.Mesh, minRadius: number) {
  * Give every mesh under root a toon material and its own outline child.
  * Used for animated models, where meshes must keep their own transforms.
  */
-export function toonify(root: THREE.Object3D, minRadius = 0.05) {
+export function toonify(root: THREE.Object3D, minRadius = 0.05, outline: THREE.Material = outlineMaterial) {
   if (root.userData.toonified) return; // cached glTF scenes come back on remount
   root.userData.toonified = true;
   const meshes: THREE.Mesh[] = [];
@@ -107,7 +112,7 @@ export function toonify(root: THREE.Object3D, minRadius = 0.05) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     if (wantsOutline(mesh, minRadius)) {
-      const hull = new THREE.Mesh(outlineGeometry(mesh.geometry), outlineMaterial);
+      const hull = new THREE.Mesh(outlineGeometry(mesh.geometry), outline);
       hull.raycast = () => {};
       mesh.add(hull);
     }

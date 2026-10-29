@@ -21,6 +21,8 @@ export const speedFor = (nx: number) => Math.sign(nx) * MAX_SPEED * smoothstep(D
  */
 export function useEdgeRotation(group: React.RefObject<THREE.Group>, enabled = true) {
   const state = useRef({ target: 0, vel: 0, dragging: false, lastX: 0, lastT: 0, keys: 0 });
+  const on = useRef(enabled);
+  on.current = enabled;
 
   useEffect(() => {
     const s = state.current;
@@ -40,7 +42,8 @@ export function useEdgeRotation(group: React.RefObject<THREE.Group>, enabled = t
       s.target = speedFor((e.clientX / window.innerWidth) * 2 - 1);
     };
     const onDown = (e: PointerEvent) => {
-      if (e.pointerType === "mouse") return;
+      // only drags that start on the town itself, not on the dialogue, panel or nav
+      if (e.pointerType === "mouse" || !on.current || !(e.target instanceof HTMLCanvasElement)) return;
       s.dragging = true;
       s.lastX = e.clientX;
       s.lastT = performance.now();
@@ -56,6 +59,7 @@ export function useEdgeRotation(group: React.RefObject<THREE.Group>, enabled = t
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
       const dir = e.key === "ArrowRight" ? 1 : -1;
       if (e.type === "keydown") {
+        if (!on.current) return;
         s.keys = dir;
         s.target = dir * MAX_SPEED;
       } else if (s.keys === dir) {
