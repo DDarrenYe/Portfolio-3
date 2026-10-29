@@ -11,8 +11,11 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/** Turning speed for a horizontal mouse position nx in [-1, 1]. Positive turns the front to the right. */
-export const speedFor = (nx: number) => Math.sign(nx) * MAX_SPEED * smoothstep(DEAD_ZONE, 1, Math.abs(nx));
+/**
+ * Turning speed (rad/s around +Y) for a horizontal mouse position nx in [-1, 1].
+ * Mouse right spins the town clockwise seen from above (negative), mouse left counter-clockwise.
+ */
+export const speedFor = (nx: number) => -Math.sign(nx) * MAX_SPEED * smoothstep(DEAD_ZONE, 1, Math.abs(nx));
 
 /**
  * Turns a group around Y from the mouse's horizontal position: still in the middle,
@@ -61,7 +64,7 @@ export function useEdgeRotation(group: React.RefObject<THREE.Group>, enabled = t
       if (e.type === "keydown") {
         if (!on.current) return;
         s.keys = dir;
-        s.target = dir * MAX_SPEED;
+        s.target = -dir * MAX_SPEED; // same way round as the mouse: right arrow spins clockwise
       } else if (s.keys === dir) {
         s.keys = 0;
         s.target = 0;

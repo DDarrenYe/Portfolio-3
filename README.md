@@ -36,7 +36,8 @@ Review an NPC up close with `?look=spot_king` (or `spot_shopkeeper`, `spot_black
   one for a three-band toon material and adds an ink outline of constant on-screen width
   (`src/scene/toon.ts`). Lighting and outlines live in code, not in Blender.
 - **Rotation:** `src/hooks/useEdgeRotation.ts`. The mouse sets the turning speed: still in the
-  middle 30% of the screen, up to 0.6 rad/s at the edges. Touch drag and arrow keys work too.
+  middle 30% of the screen, up to 0.6 rad/s at the edges. Mouse on the right spins the town
+  clockwise (seen from above), on the left counter-clockwise. Touch drag and arrow keys work too.
 - **Models:** built by Python scripts in `art/scripts/` (`town.py` lays out the town,
   `buildings.py` holds the house and landmark builders, `npcs.py` and `chibi.py` the NPCs) and
   exported to `public/models/`. The `.blend` files in `art/` are saved alongside, so you can open
