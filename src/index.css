@@ -1,0 +1,13 @@
+:root {
+  --ink: #2a2d3a;
+  --sky-top: #cfe0f2;
+  --sky-bottom: #f1ece0;
+  font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+}
+html, body, #root { height: 100%; margin: 0; }
+body { background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom)); overflow: hidden; }
+.stage { position: relative; height: 100%; }
+.overlay { position: absolute; top: 20px; left: 24px; pointer-events: none; }
+.overlay h1 { font-family: "Lilita One", "Trebuchet MS", sans-serif; font-weight: 400; font-size: 2.2rem; margin: 0; }
+.overlay p { margin: 4px 0 0; font-size: 0.95rem; opacity: 0.75; }
