@@ -40,6 +40,7 @@ function Projects() {
       {PROJECTS.map((p) => (
         <li key={p.name} className="ware">
           <header>
+            <img className="ware-icon" src={`${import.meta.env.BASE_URL}projects/${p.icon}`} alt="" width="48" height="48" />
             <h3>{p.name}</h3>
             {p.note && <span className="chip chip-quiet">{p.note}</span>}
           </header>

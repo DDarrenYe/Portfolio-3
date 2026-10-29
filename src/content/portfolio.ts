@@ -90,6 +90,8 @@ export const sectionFor = (npc: NpcId) => SECTIONS.find((s) => s.npc === npc)!;
 
 export type Project = {
   name: string;
+  /** App icon, from public/projects/. */
+  icon: string;
   tagline: string;
   summary: string;
   highlights: string[];
@@ -101,6 +103,7 @@ export type Project = {
 export const PROJECTS: Project[] = [
   {
     name: "INBTWN",
+    icon: "inbtwn.png",
     tagline: "Learn a language by talking, not tapping",
     summary:
       "An iOS language-learning app where every lesson is a conversation with an AI tutor in the language you're learning. Mandarin is the first language, and Toto the mascot is your conversation partner.",
@@ -115,6 +118,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: "Pacer",
+    icon: "pacer.svg",
     tagline: "Running analytics that tell you what to work on",
     summary:
       "Connect Strava or upload a GPX file to see km splits, how much you fade, best efforts, weekly trends and predicted race times. Set a race goal and Pacer shows where your trend puts you on race day.",
@@ -131,6 +135,7 @@ export const PROJECTS: Project[] = [
   },
   {
     name: "Pentimento",
+    icon: "pentimento.svg",
     tagline: "Showing the thinking behind AI-assisted essays",
     summary:
       "Our INFOMGMT 399 capstone. Students import their AI chats, critique each step with three questions and submit the final essay. Instructors see which parts match the logged AI answers, read the reflection checks, leave feedback and export PDF or CSV reports.",

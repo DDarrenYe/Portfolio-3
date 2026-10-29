@@ -301,7 +301,9 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
 
 .wares { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
 .ware { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: #fff; border: var(--line); border-radius: 10px; box-shadow: 4px 4px 0 var(--shadow); }
-.ware header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.ware header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.ware header h3 { flex: 1; }
+.ware-icon { width: 48px; height: 48px; flex: none; border: 2px solid var(--ink); border-radius: 11px; box-shadow: 2px 2px 0 var(--shadow); }
 .ware-tagline { font-weight: 700; color: #9c4f2c; }
 .ware-highlights { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; }
 .ware-highlights li::marker { color: var(--accent); }
