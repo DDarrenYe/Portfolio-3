@@ -64,6 +64,9 @@ export function makeOutlineMaterial(color: THREE.ColorRepresentation = INK) {
 
 export const outlineMaterial = makeOutlineMaterial();
 
+/** A palette material by name (pal_lamp, pal_glass…), once a model using it has loaded. */
+export const getToon = (name: string) => toonCache.get(name);
+
 /**
  * Hull geometry for the outline: same positions, but with normals smoothed across
  * shared corners so the hull doesn't split open at hard box edges.

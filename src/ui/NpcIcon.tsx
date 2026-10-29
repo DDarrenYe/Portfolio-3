@@ -22,8 +22,11 @@ export function NpcIcon({ npc }: { npc: NpcId }) {
       )}
       {npc === "blacksmith" && (
         <>
-          <rect x="21" y="18" width="6" height="24" rx="2" fill="#7a5236" stroke={INK} strokeWidth="2.5" transform="rotate(35 24 30)" />
-          <rect x="10" y="8" width="24" height="12" rx="2" fill="#8a93a6" stroke={INK} strokeWidth="2.5" transform="rotate(35 22 14)" />
+          {/* one rotation for the whole hammer, so the handle stays centred under the head */}
+          <g transform="rotate(35 24 24)">
+            <rect x="21" y="16" width="6" height="28" rx="2" fill="#7a5236" stroke={INK} strokeWidth="2.5" />
+            <rect x="11" y="6" width="26" height="12" rx="2" fill="#8a93a6" stroke={INK} strokeWidth="2.5" />
+          </g>
         </>
       )}
       {npc === "wizard" && (

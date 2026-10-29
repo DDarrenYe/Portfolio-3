@@ -26,6 +26,10 @@ npm install
 npm run dev
 ```
 
+The town runs a 3-minute day and night cycle (`src/scene/DayNight.tsx`): about 50 seconds of
+day, a slow dusk, about 50 seconds of night with stars and lit windows, and a slow dawn.
+Freeze it with `?phase=0.5` (0 is noon, 0.5 is midnight).
+
 Review an NPC up close with `?look=spot_king` (or `spot_shopkeeper`, `spot_blacksmith`,
 `spot_wizard`, `spot_adventurer`), or start the town turned with `?turn=90`.
 

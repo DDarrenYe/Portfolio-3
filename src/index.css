@@ -23,6 +23,35 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .stage { position: relative; height: 100%; }
 
+/* ---- sky behind the canvas; DayNight sets the colours and star opacity */
+.sky {
+  --sky-top: #cfe0f2;
+  --sky-bottom: #f1ece0;
+  --stars: 0;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+}
+.stars {
+  position: absolute;
+  inset: 0 0 35% 0;
+  opacity: var(--stars);
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 18%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 27% 8%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 41% 26%, #fff7d6 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 55% 12%, #fff 50%, transparent 52%),
+    radial-gradient(1.6px 1.6px at 68% 30%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 79% 6%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 88% 22%, #fff7d6 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 94% 40%, #fff 50%, transparent 52%),
+    radial-gradient(1.6px 1.6px at 6% 44%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 34% 48%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 61% 52%, #fff 50%, transparent 52%),
+    radial-gradient(1.6px 1.6px at 19% 62%, #fff 50%, transparent 52%);
+  background-size: 420px 300px;
+}
+
 /* ---- header and nav */
 .overlay {
   position: absolute;
@@ -36,11 +65,13 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   z-index: 25;
 }
 .overlay h1, .overlay-role {
-  /* a parchment halo keeps the name readable over a busy close-up of the town */
-  text-shadow: 0 0 2px var(--parchment), 0 0 6px var(--parchment), 0 0 12px var(--parchment);
+  /* ink with a parchment halo by day, parchment with a night-sky halo after dark (--night is set by DayNight) */
+  --halo: color-mix(in srgb, #121a36 calc(var(--night, 0) * 100%), var(--parchment));
+  color: color-mix(in srgb, var(--parchment) calc(var(--night, 0) * 100%), var(--ink));
+  text-shadow: 0 0 2px var(--halo), 0 0 6px var(--halo), 0 0 12px var(--halo);
 }
 .overlay h1 { font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0; line-height: 1; }
-.overlay-role { margin: 0; font-size: 0.95rem; color: var(--ink-soft); font-weight: 700; }
+.overlay-role { margin: 0; font-size: 0.95rem; font-weight: 700; }
 .overlay nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; pointer-events: auto; }
 .nav-btn {
   font-family: var(--display);

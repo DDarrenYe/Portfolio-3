@@ -152,7 +152,7 @@ export const SKILLS: { group: string; items: string[] }[] = [
   { group: "Languages", items: ["TypeScript", "JavaScript", "Python", "Swift", "SQL", "R", "C", "Java", "HTML & CSS"] },
   { group: "Frameworks", items: ["React", "Next.js", "SwiftUI", "FastAPI", "Tailwind CSS", "Three.js"] },
   { group: "Data", items: ["PostgreSQL", "Supabase", "pandas", "NumPy", "statsmodels", "RStudio"] },
-  { group: "Tools", items: ["Git", "GitHub Actions", "Vercel", "Render", "pytest", "Playwright", "Blender (Python)"] },
+  { group: "Tools", items: ["Git", "GitHub Actions", "Vercel", "Render", "pytest", "Playwright", "Blender"] },
 ];
 
 export type Photo = { src: string; alt: string; caption: string };
