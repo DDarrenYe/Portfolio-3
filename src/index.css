@@ -62,7 +62,7 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   left: 0;
   z-index: 25;
   padding-top: max(14px, env(safe-area-inset-top, 0px));
-  padding-left: max(14px, env(safe-area-inset-left, 0px));
+  padding-left: env(safe-area-inset-left, 0px); /* the post sits flush against the left edge */
   pointer-events: none;
 }
 /* the sign itself is a Blender model drawn in this canvas (Signpost.tsx); the DOM below only
@@ -72,9 +72,9 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   top: 0;
   left: 0;
   pointer-events: none;
-  filter: drop-shadow(5px 6px 0 rgb(143 179 218 / 0.9));
 }
-.signpost-arm { position: relative; z-index: 1; display: inline-flex; flex-direction: column; margin-left: 12px; }
+/* 40px clears the 24px post with a gap, so the board hangs free of it */
+.signpost-arm { position: relative; z-index: 1; display: inline-flex; flex-direction: column; margin-left: 40px; }
 .signpost-beam { height: 24px; }
 .signpost-swing { transform-origin: 50% 0; padding: 0 6px; }
 .signpost-chains { height: 40px; }
@@ -84,7 +84,7 @@ button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent
   flex-direction: column;
   gap: 4px;
   padding: 12px 18px 14px;
-  max-width: min(540px, calc(100vw - 80px));
+  max-width: min(540px, calc(100vw - 100px));
 }
 /* carved lettering: dark grooves with a pale lip underneath */
 .sign-name, .sign-role {

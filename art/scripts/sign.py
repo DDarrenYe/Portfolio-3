@@ -118,7 +118,8 @@ def build_post():
 
 def build_brace():
     br = empty("brace")
-    beam("brace_body", (0.45, -0.02, -3.0), (2.5, -0.02, -0.55), 0.3, m="weathered", parent=br)
+    # short and steep, so it stays above the top of the board hanging beside the post
+    beam("brace_body", (0.5, -0.02, -1.5), (1.7, -0.02, -0.5), 0.26, m="weathered", parent=br)
     return br
 
 
